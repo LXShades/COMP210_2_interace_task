@@ -1,18 +1,52 @@
 # AR/VR Project (1707981)
-## Ideas
+## Proposal
+### Zombie Tag
+A game where you play as a crawling zombie on the ground, chasing down fleeing humans and tagging them so they become zombies too. The player moves by crawling, ideally reducing motion sickness by restricting camera movement to snappy pulls made by the user's arms.  
+
+The goal of the game is to convert the entire roster of fleeing humans into mindless zombies joining you in the takeover of humanity. 
+
+#### Potential mechanics
+* Using your hands, pull yourself forwards along the ground by touching the ground and pulling the trigger
+* Weights to make the arms heavier and user slower and more zombie-like
+* Pick up rocks and knives, throw them towards humans
+* Pull in humans with hands and eat them by pulling both hands together and moving towards your mouth
+
+#### User stories
+**Bolded** stories are highest priority in each category, unbolded stories are ideal but less priority than the next category.
+
+* As a zombie, I want an area to explore
+ * **Implement a basic city street with tall box buildings either side and a forward roadway**
+ * **Implement boundary to stop humans and zombies from diverging from this road**
+* As a zombie, I want to have hands so I can move and grab stuff
+ * **Implement SteamVR hands** with predefined model or hand-shape made of cubes
+* As a zombie I want to be able to pull myself along the ground with my hands so I can chase humans
+ * **Implement VR hand grip by pulling a trigger**
+ * **Implement ground detection/response to being gripped**
+ * **Implement head movement in response to pulling the gripped ground**
+ * Implement visual feedback to hand gripping on a surface
+ * Implement vibration feedback to hand gripping on a surface
+* As a zombie I want humans that I can chase
+ * **Implement cubemans which run away at a slower speed than the zombie**
+ * **Make cubemans zig-zag from side to side of the road**
+ * Make humans run away more slowly if they are at a distance, so the player can reasonably catch them
+* As a zombie, I want to grab these humans
+ * **Implement human grabbing, they just stick to your hand when you grip them**
+* As a zombie, I want to bite these humans
+ * **Implement double human grabbing**
+ * **When the human reaches the mouth, make it change to green**
+* As a zombie, I want bitten humans to join me
+ * **When the human is green, it slowly chases other humans**
+* As a zombie, I want to know I'm victorious when all humans are mine
+ * Implement a human counter UI that sits in the sky, so you can see how many humans are left by looking up
+ * Implement a 'you win' block that sits ahead of the player
+ * Implement a 'restart' block which reloads the scene when clicked
+
+## Previous ideas
 Ideally, my project will include: 
 
 * An explorable area despite the challenges of movement in VR
 * Fast-paced non-static gameplay
 * Achievable to create along with the frog game assignment, comp220 assignment and CPD
-
-### Zombie Tag
-A game where you play as a crawling zombie on the ground, chasing down fleeing humans and tagging them so they become zombies too.  
-
-A crawling motion is used to move, ideally reducing motion sickness by restricting camera movement to snappy pulls made by the user's arms. 
-
-#### Mechanics
-* Using your hands, pull yourself forwards along the ground by touching the ground and pulling the trigger.
 
 ### Giant Tag
 A game where you play as a giant in a big city. It's pretty simple. Smash everything! Destroy the world! Pick up planes and throw them at buildings or other planes, smash your fist down on skyscrapers, grab the ground and pull yourself along whilst crushing everything below you.  
