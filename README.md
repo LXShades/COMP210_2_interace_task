@@ -22,15 +22,15 @@ A game where you play as a giant in a big city. It's pretty simple. Smash everyt
 * Also you can pull yourself along the ground in a similar way to the zombie game, or perhaps take the Sprint Vector approach where you swing your arms.
 
 ### Frog Game except you're Hanging on the Tree
-A VR version of the Frog game we're making in the group. It's a platformer where you play as a frog and use your tongue for sick movements and stuff. Currently, the extent of the game is not strictly defined, but a level could be defined for the VR prototype. The level could include: Dodging cannonballs, riding an updraught up the centre of a tree trunk, breakable walls that the user can 
+A VR version of the Frog game we're making in the group. It's a platformer where you play as a frog and use your tongue for sick movements and stuff. Currently, the extent of the game is not strictly defined, but a level could be defined for the VR prototype. The level could include: Dodging cannonballs, riding an updraught up the centre of a tree trunk, breakable walls that the player can break, jumping super high and tongue-swinging targets. The focus of the level could be around gaining height so at the end the player can look down upon the world.  
 
 The player's perspective is from the heights of trees around the area, giving you a bird's eye view of the main character. Player movement only occurs via the trees, which you could teleport or pull yourself to. Alternatively, based on Astro Bot's strategy, the camera could move in straight lines across the trees at a relatively fixed speed.  
-
-The player could have... a ... boomerang?? That they can throw down into the level to break walls.
 
 #### Mechanics
 * Flinging your hand out elastically, grabbing the tree and pulling yourself toward it  
 * Using the trackpad to drive the character
+* Tongue-swinging (somehow)
+* Jumping and double-jumping for verticality.
 
 ## Challenges
 The main challenge for this is achieving freedom of movement without causing motion sickness from VIMS, visually-induced motion sensitivity. This creates a disparity between the sense of movement in the inner ear (vestibular system) and the movement the player sees themself achieving.  
