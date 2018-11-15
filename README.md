@@ -12,7 +12,9 @@ The goal of the game is to convert the entire roster of fleeing humans into mind
 * Pull in humans with hands and eat them by pulling both hands together and moving towards your mouth
 
 #### User stories
-**Bolded** stories are highest priority in each category, unbolded stories are ideal but less priority than the next category.
+**Bolded** stories are highest priority in each category, unbolded stories are ideal but less priority than the next category.  
+
+Trello: https://trello.com/b/2eY6zbbQ/zombietag  
 
 * As a zombie, I want an area to explore
  * **Implement a basic city street with tall box buildings either side and a forward roadway**
