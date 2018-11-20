@@ -73,12 +73,20 @@ public class VRHand : MonoBehaviour {
             if (carryingHuman)
             {
                 carryingHuman.transform.SetParent(null, true);
+                carryingHuman = null;
             }
         }
 
+        // Move grabbed humans
         if (carryingHuman)
         {
             carryingHuman.transform.localPosition = carryingHumanPosition;
+
+            // Convert them to zombies if close enough to mouth
+            if (Vector3.Distance(carryingHuman.transform.position, Camera.main.transform.position) <= 2.0f)
+            {
+                carryingHuman.isZombie = true;
+            }
         }
     }
 

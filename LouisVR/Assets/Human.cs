@@ -11,8 +11,34 @@ public class Human : MonoBehaviour {
 
     Player player;
 
-	// Use this for initialization
-	void Start () {
+    public bool isZombie
+    {
+        set
+        {
+            // Make me green
+            if (value == true)
+            {
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    var renderer = transform.GetChild(i).GetComponent<MeshRenderer>();
+                    if (renderer)
+                    {
+                        renderer.material.color = Color.green;
+                    }
+                }
+            }
+
+            _isZombie = value;
+        }
+        get
+        {
+            return _isZombie;
+        }
+    }
+    private bool _isZombie;
+
+    // Use this for initialization
+    void Start () {
         float runAngle = Random.Range(-40.0f, 40.0f) * Mathf.Deg2Rad;
 
         runDirection = new Vector3(Mathf.Cos(runAngle), 0.0f, Mathf.Sin(runAngle));
@@ -40,6 +66,12 @@ public class Human : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
+        // Convert other zombies to zombies if we're a zombie
+        var human = collision.collider.gameObject.GetComponent<Human>();
+        if (isZombie && human)
+        {
+            human.isZombie = true;
+        }
         // Bounce off the sides of the road
         runDirection.x = -runDirection.x;
     }
