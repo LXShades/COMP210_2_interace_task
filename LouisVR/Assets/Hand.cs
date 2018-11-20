@@ -5,13 +5,18 @@ using UnityEngine;
 public class Hand : MonoBehaviour {
     private Camera camera;
 
+    [SerializeField] public float defaultArmLength = 3.0f;
+
     private bool isGripping = false;
 
     private Vector3 previousPosition;
 
+    private Rigidbody rigidbody;
+
 	// Use this for initialization
 	void Start () {
         camera = Camera.main;
+        rigidbody = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
@@ -24,18 +29,20 @@ public class Hand : MonoBehaviour {
 
         // Position the hand from camera
         Ray cameraRay = camera.ScreenPointToRay(Input.mousePosition);
-        float maxArmLength = 2.0f;
         RaycastHit hit;
 
-        if (Physics.Raycast(cameraRay, out hit, maxArmLength, ~(1<<LayerMask.NameToLayer("Hand"))))
+        if (Physics.Raycast(cameraRay, out hit, defaultArmLength, ~(1<<LayerMask.NameToLayer("Hand"))))
         {
             Debug.Log("Collided with " + hit.collider.gameObject);
             transform.position = hit.point;
         }
         else
         {
-            transform.position = cameraRay.origin + cameraRay.direction * maxArmLength;
+            transform.position = cameraRay.origin + cameraRay.direction * defaultArmLength;
         }
+
+        // Change the distance
+        defaultArmLength += Input.mouseScrollDelta.y;
 
         // Drag
         isGripping = Input.GetButton("Fire1");
@@ -43,10 +50,10 @@ public class Hand : MonoBehaviour {
 
     void UpdateDragMovement()
     {
-        if (isGripping)
+        /*if (isGripping)
         {
             // Pull the camera along
             camera.transform.position -= transform.position - previousPosition;
-        }
+        }*/
     }
 }

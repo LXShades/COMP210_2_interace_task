@@ -31,22 +31,30 @@ public class VRHand : MonoBehaviour {
 		// Update the previous position
 		previousPosition = transform.position;
 
-		// Update grip
-		//isGripping = Input.GetButton("Fire1");
-		if (isGrabbing.GetStateDown(SteamVR_Input_Sources.Any))
-		{
-			if (Time.time - lastCollisionTime <= 0.1)
-			{
-				Debug.Log("Grabbed");
-				isGripping = true;
-			}
-		}
-		else if (isGrabbing.GetStateUp(SteamVR_Input_Sources.Any))
-		{
-			Debug.Log("NoGrab");
-			isGripping = false;
-		}
-	}
+        // Update grip
+        bool isGripDown = Input.GetMouseButtonDown(0), isGripUp = Input.GetMouseButtonUp(0);
+
+        if (UnityEngine.XR.XRSettings.enabled)
+        {
+            isGripDown = isGrabbing.GetStateDown(SteamVR_Input_Sources.Any);
+            isGripUp = isGrabbing.GetStateUp(SteamVR_Input_Sources.Any);
+        }
+
+        //isGripping = Input.GetButton("Fire1");
+        if (isGripDown)
+        {
+            if (Time.time - lastCollisionTime <= 0.1)
+            {
+                Debug.Log("Grabbed");
+                isGripping = true;
+            }
+        }
+        else if (isGripUp)
+        {
+            Debug.Log("NoGrab");
+            isGripping = false;
+        }
+    }
 
 	void UpdateDragMovement()
 	{
