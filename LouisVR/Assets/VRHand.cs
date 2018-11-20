@@ -10,9 +10,15 @@ public class VRHand : MonoBehaviour {
 
 	private GameObject camera;
 
-	private bool isGripping = false;
+	private bool isGrippingGround = false;
 
-	private float lastCollisionTime;
+	private float lastCollidedGroundTime;
+
+    private Human lastCollidedHuman;
+    private float lastCollidedHumanTime;
+
+    private Human carryingHuman;
+    private Vector3 carryingHumanPosition;
 
 	private Vector3 previousPosition;
 
@@ -43,22 +49,42 @@ public class VRHand : MonoBehaviour {
         //isGripping = Input.GetButton("Fire1");
         if (isGripDown)
         {
-            if (Time.time - lastCollisionTime <= 0.1)
+            // Grab the ground
+            if (Time.time - lastCollidedGroundTime <= 0.1)
             {
                 Debug.Log("Grabbed");
-                isGripping = true;
+                isGrippingGround = true;
+            }
+
+            // Grab humans
+            if (Time.time - lastCollidedHumanTime <= 0.1f)
+            {
+                carryingHuman = lastCollidedHuman;
+                carryingHuman.transform.SetParent(transform, true);
+                carryingHumanPosition = carryingHuman.transform.localPosition;
             }
         }
         else if (isGripUp)
         {
             Debug.Log("NoGrab");
-            isGripping = false;
+            isGrippingGround = false;
+
+            // Let go of humans
+            if (carryingHuman)
+            {
+                carryingHuman.transform.SetParent(null, true);
+            }
+        }
+
+        if (carryingHuman)
+        {
+            carryingHuman.transform.localPosition = carryingHumanPosition;
         }
     }
 
 	void UpdateDragMovement()
 	{
-		if (isGripping)
+		if (isGrippingGround)
 		{
 			Vector3 movementVector = previousPosition - transform.position;
 
@@ -72,7 +98,16 @@ public class VRHand : MonoBehaviour {
 
 	void OnTriggerStay(Collider other)
 	{
-		Debug.Log("Colliding");
-		lastCollisionTime = Time.time;
+        var human = other.gameObject.GetComponent<Human>();
+
+        if (human)
+        {
+            lastCollidedHuman = human;
+            lastCollidedHumanTime = Time.time;
+        }
+        else
+        {
+            lastCollidedGroundTime = Time.time;
+        }
 	}
 }
