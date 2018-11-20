@@ -12,7 +12,7 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         // Move with WASD
-        transform.position += transform.right * Input.GetAxis("Horizontal") * Time.deltaTime;
-        transform.position += transform.forward * Input.GetAxis("Vertical") * Time.deltaTime;
+        transform.position += transform.right * (Input.GetAxis("Horizontal") * 6.0f * Time.deltaTime);
+        transform.position += transform.forward * (Input.GetAxis("Vertical") * 6.0f * Time.deltaTime);
     }
 }
