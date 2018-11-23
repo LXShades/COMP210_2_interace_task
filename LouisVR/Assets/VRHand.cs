@@ -4,7 +4,10 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-public class VRHand : MonoBehaviour {
+public class VRHand : MonoBehaviour
+{
+	[SerializeField] public SteamVR_Input_Sources handType;
+
 	[SteamVR_DefaultAction("GrabPinch", "default")]
 	public SteamVR_Action_Boolean isGrabbing;
 
@@ -42,8 +45,8 @@ public class VRHand : MonoBehaviour {
 
         if (UnityEngine.XR.XRSettings.enabled)
         {
-            isGripDown = isGrabbing.GetStateDown(SteamVR_Input_Sources.Any);
-            isGripUp = isGrabbing.GetStateUp(SteamVR_Input_Sources.Any);
+            isGripDown = isGrabbing.GetStateDown(handType);
+            isGripUp = isGrabbing.GetStateUp(handType);
         }
 
         //isGripping = Input.GetButton("Fire1");
