@@ -68,9 +68,34 @@ public class Human : MonoBehaviour {
         // Run away from the player
         float runSpeed = Mathf.Lerp(maxRunSpeed, minRunSpeed, Vector3.Distance(transform.position, player.transform.position) / maxRange);
 
+        Debug.Log("Run speed: " + runSpeed);
+
         if (Mathf.Sign(transform.position.z - player.transform.position.z) != Mathf.Sign(runDirection.z))
         {
             runDirection.z = -runDirection.z;
+        }
+
+        // If we're zombiefied, run towards the nearest human
+        if (isZombie)
+        {
+            GameObject closestHuman = null;
+            float closestHumanDistance = 0.0f;
+            foreach (var human in GameObject.FindGameObjectsWithTag("Human"))
+            {
+                var humanComponent = human.GetComponent<Human>();
+                if (humanComponent && (!humanComponent.isZombie) && (Vector3.Distance(human.transform.position, transform.position) < closestHumanDistance || !closestHuman))
+                {
+                    closestHuman = human;
+                    closestHumanDistance = Vector3.Distance(human.transform.position, transform.position);
+                }
+            }
+
+            if (closestHuman != null)
+            {
+                // Chase the human at a reasonable speed
+                runDirection = (closestHuman.transform.position - transform.position).normalized;
+                //runSpeed = what could the speed be?
+            }
         }
 
         // Move by the velocity
