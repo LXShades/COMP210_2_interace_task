@@ -28,6 +28,20 @@ public class Human : MonoBehaviour {
                 }
             }
 
+            if (value != _isZombie)
+            {
+                if (value == true)
+                {
+                    GameMode.numZombies++;
+                    GameMode.numHumans--;
+                }
+                else
+                {
+                    GameMode.numHumans++;
+                    GameMode.numZombies--;
+                }
+            }
+
             _isZombie = value;
         }
         get
@@ -41,8 +55,12 @@ public class Human : MonoBehaviour {
     void Start () {
         float runAngle = Random.Range(-40.0f, 40.0f) * Mathf.Deg2Rad;
 
-        runDirection = new Vector3(Mathf.Cos(runAngle), 0.0f, Mathf.Sin(runAngle));
+        // Initialise the run direction
+        runDirection = new Vector3(Mathf.Sin(runAngle), 0.0f, Mathf.Cos(runAngle));
         player = GameObject.FindWithTag("Player").GetComponent<Player>();
+
+        // Increment game mode's number of humans
+        GameMode.numHumans++;
 	}
 	
 	// Update is called once per frame
