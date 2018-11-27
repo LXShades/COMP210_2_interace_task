@@ -78,7 +78,7 @@ public class Human : MonoBehaviour {
         {
             transform.position += runDirection * (Time.deltaTime * runSpeed);
             //GetComponent<Rigidbody>().velocity = runDirection * runSpeed;
-            transform.LookAt(runDirection);
+            transform.LookAt(transform.position + runDirection);
         }
 	}
 

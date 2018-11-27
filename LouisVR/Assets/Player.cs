@@ -7,7 +7,11 @@ public class Player : MonoBehaviour {
 	[SerializeField] public float minHeadHeight = 0.1f; // The minimum height of your head above the road
 	[SerializeField] public float maxHeadHeight = 0.6f;
 
+    [SerializeField] public GameObject winObjectType;
+
 	private Transform head;
+
+    private GameObject winObject;
 
 	// Use this for initialization
 	void Start () {
@@ -21,10 +25,15 @@ public class Player : MonoBehaviour {
             // Move with WASD
             transform.position += Camera.main.transform.right * (Input.GetAxis("Horizontal") * 6.0f * Time.deltaTime);
             transform.position += Camera.main.transform.forward * (Input.GetAxis("Vertical") * 6.0f * Time.deltaTime);
+
+            // Restart the game on keypress
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                GameMode.RestartGame();
+            }
         }
 
 		// Adjust head height based on the user's max and min height
-
 		Vector3 headPosition = head.position;
 		Vector3 localPosition = transform.position;
 
@@ -40,10 +49,11 @@ public class Player : MonoBehaviour {
 
 		transform.position = localPosition;
 
-        // Restart the game on keypress
-        if (Input.GetKeyDown(KeyCode.R))
+        // If we won, show the win cube
+        if (GameMode.numHumans == 0 && !winObject)
         {
-            GameMode.RestartGame();
+            winObject = Instantiate(winObjectType);
+            winObject.transform.position = headPosition + head.forward * 3.0f;
         }
     }
 }
