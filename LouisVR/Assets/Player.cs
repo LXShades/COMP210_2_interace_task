@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField] public GameObject winObjectType;
 
-	private Transform head;
+	public Transform head;
 
     private GameObject winObject;
 

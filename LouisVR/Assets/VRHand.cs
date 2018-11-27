@@ -111,6 +111,7 @@ public class VRHand : MonoBehaviour
 	{
         var human = other.gameObject.GetComponent<Human>();
 
+        // Check if we picked up a human
         if (human)
         {
             lastCollidedHuman = human;
@@ -119,6 +120,24 @@ public class VRHand : MonoBehaviour
         else
         {
             lastCollidedGroundTime = Time.time;
+        }
+
+        // Check if we clicked the win box
+        if (other.gameObject.GetComponent<WinCube>())
+        {
+            bool isGripDown = Input.GetMouseButtonDown(0), isGripUp = Input.GetMouseButtonUp(0);
+
+            if (UnityEngine.XR.XRSettings.enabled)
+            {
+                isGripDown = isGrabbing.GetStateDown(handType);
+                isGripUp = isGrabbing.GetStateUp(handType);
+            }
+
+            if (isGripDown)
+            {
+                // Restart the game
+                GameMode.RestartGame();
+            }
         }
 	}
 }

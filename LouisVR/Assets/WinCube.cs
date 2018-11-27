@@ -11,11 +11,11 @@ public class WinCube : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        var player = GameObject.FindGameObjectWithTag("Player");
+        var player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         if (player)
         {
-            transform.forward = player.transform.position - transform.position;
+            transform.forward = player.head.position - transform.position;
         }
 
         transform.position = new Vector3(transform.position.x, 2.0f + Mathf.Sin(Time.time), transform.position.z);

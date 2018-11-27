@@ -51,6 +51,9 @@ public class Human : MonoBehaviour {
     }
     private bool _isZombie;
 
+    private Human chaseTarget;
+    private Human chaser;
+
     // Use this for initialization
     void Start () {
         float runAngle = Random.Range(-40.0f, 40.0f) * Mathf.Deg2Rad;
@@ -66,9 +69,7 @@ public class Human : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         // Run away from the player
-        float runSpeed = Mathf.Lerp(maxRunSpeed, minRunSpeed, Vector3.Distance(transform.position, player.transform.position) / maxRange);
-
-        Debug.Log("Run speed: " + runSpeed);
+        float runSpeed = Mathf.Lerp(maxRunSpeed, minRunSpeed, Vector3.Distance(transform.position, player.head.position) / maxRange);
 
         if (Mathf.Sign(transform.position.z - player.transform.position.z) != Mathf.Sign(runDirection.z))
         {
@@ -76,30 +77,38 @@ public class Human : MonoBehaviour {
         }
 
         // If we're zombiefied, run towards the nearest human
-        if (isZombie)
+        if (isZombie && (!chaseTarget || chaseTarget.isZombie))
         {
-            GameObject closestHuman = null;
+            Human closestHuman = null;
             float closestHumanDistance = 0.0f;
             foreach (var human in GameObject.FindGameObjectsWithTag("Human"))
             {
                 var humanComponent = human.GetComponent<Human>();
-                if (humanComponent && (!humanComponent.isZombie) && (Vector3.Distance(human.transform.position, transform.position) < closestHumanDistance || !closestHuman))
+                float distance = Vector3.Distance(human.transform.position, transform.position);
+
+                if (humanComponent && !humanComponent.isZombie && (distance < closestHumanDistance || !closestHuman) && !humanComponent.chaser)
                 {
-                    closestHuman = human;
+                    closestHuman = humanComponent;
                     closestHumanDistance = Vector3.Distance(human.transform.position, transform.position);
                 }
             }
 
             if (closestHuman != null)
             {
-                // Chase the human at a reasonable speed
-                runDirection = (closestHuman.transform.position - transform.position).normalized;
-                //runSpeed = what could the speed be?
+                chaseTarget = closestHuman;
+                closestHuman.chaser = this;
             }
         }
 
+        if (chaseTarget)
+        {
+            // Chase the human at a reasonable speed
+            runDirection = (chaseTarget.transform.position - transform.position).normalized;
+            //runSpeed = what could the speed be?
+        }
+
         // Move by the velocity
-		if (runSpeed >= 0.0f)
+        if (runSpeed >= 0.0f)
         {
             transform.position += runDirection * (Time.deltaTime * runSpeed);
             //GetComponent<Rigidbody>().velocity = runDirection * runSpeed;

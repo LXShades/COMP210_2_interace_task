@@ -21,9 +21,6 @@ public class Hand : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        // Update drag movement
-        UpdateDragMovement();
-
         // Update the previous position
         previousPosition = transform.position;
 
@@ -47,13 +44,4 @@ public class Hand : MonoBehaviour {
         // Drag
         isGripping = Input.GetButton("Fire1");
 	}
-
-    void UpdateDragMovement()
-    {
-        /*if (isGripping)
-        {
-            // Pull the camera along
-            camera.transform.position -= transform.position - previousPosition;
-        }*/
-    }
 }

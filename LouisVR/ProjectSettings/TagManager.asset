@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FxTemporaire
   - projectile
+  - Human
   layers:
   - Default
   - TransparentFX
