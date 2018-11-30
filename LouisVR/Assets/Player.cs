@@ -9,13 +9,21 @@ public class Player : MonoBehaviour {
 
     [SerializeField] public GameObject winObjectType;
 
+	[SerializeField] public bool hasSkateboard = true;
+	[SerializeField] public float skateboardFriction = 1.0f;
+
+	public Vector3 velocity;
+
 	public Transform head;
 
     private GameObject winObject;
 
+	private Vector3 initialPosition;
+
 	// Use this for initialization
 	void Start () {
 		head = transform.Find("[CameraRig]").Find("Camera");
+		initialPosition = transform.position;
 	}
 	
 	// Update is called once per frame
@@ -37,17 +45,30 @@ public class Player : MonoBehaviour {
 		Vector3 headPosition = head.position;
 		Vector3 localPosition = transform.position;
 
-		if (headPosition.y <= minHeadHeight)
+		if (headPosition.y <= minHeadHeight + initialPosition.y)
 		{
-			localPosition.y -= headPosition.y - minHeadHeight;
+			localPosition.y -= headPosition.y - (minHeadHeight + initialPosition.y);
 		}
 
-		if (headPosition.y >= maxHeadHeight)
+		if (headPosition.y >= maxHeadHeight + initialPosition.y)
 		{
-			localPosition.y -= headPosition.y - maxHeadHeight;
+			localPosition.y -= headPosition.y - (maxHeadHeight + initialPosition.y);
 		}
 
 		transform.position = localPosition;
+
+		// Move by velocity
+		transform.position += velocity * Time.deltaTime;
+
+		// Friction
+		if (velocity.magnitude > skateboardFriction * Time.deltaTime)
+		{
+			velocity -= velocity.normalized * (skateboardFriction * Time.deltaTime);
+		}
+		else
+		{
+			velocity = Vector3.zero;
+		}
 
         // If we won, show the win cube
         if (GameMode.numHumans == 0 && !winObject)

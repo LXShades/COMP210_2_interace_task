@@ -11,7 +11,8 @@ public class VRHand : MonoBehaviour
 	[SteamVR_DefaultAction("GrabPinch", "default")]
 	public SteamVR_Action_Boolean isGrabbing;
 
-	private GameObject camera;
+	private Player player;
+	private GameObject head;
 
 	private bool isGrippingGround = false;
 
@@ -25,10 +26,20 @@ public class VRHand : MonoBehaviour
 
 	private Vector3 previousPosition;
 
+	struct PastPosition
+	{
+		public float time;
+		public Vector3 position;
+	}
+
+	private PastPosition[] pastPositions = new PastPosition[100];
+	int currentPastPosition = 0;
+
 	// Use this for initialization
 	void Start()
 	{
-		camera = GameObject.Find("[CameraRig]");
+		player = GameObject.Find("Player").GetComponent<Player>();
+		head = GameObject.Find("[CameraRig]/Camera");
 	}
 
 	// Update is called once per frame
@@ -93,8 +104,19 @@ public class VRHand : MonoBehaviour
         }
     }
 
+	private bool wasGrippingGround = false;
 	void UpdateDragMovement()
 	{
+		// Update position history
+		pastPositions[currentPastPosition].position = transform.position;
+		pastPositions[currentPastPosition].time = Time.time;
+		currentPastPosition++;
+
+		if (currentPastPosition >= pastPositions.Length)
+		{
+			currentPastPosition = 0;
+		}
+
 		if (isGrippingGround)
 		{
 			Vector3 movementVector = previousPosition - transform.position;
@@ -103,8 +125,47 @@ public class VRHand : MonoBehaviour
 			movementVector.y = 0.0f;
 
 			// Pull the camera along
-			camera.transform.position += movementVector;
+			player.transform.position += movementVector;
+
+			// Turn the camera
+			float angleDifference = Mathf.Atan2(transform.position.y - head.transform.position.y, transform.position.x - head.transform.position.x);
+			angleDifference -= Mathf.Atan2(previousPosition.y - head.transform.position.y, previousPosition.x - head.transform.position.x);
+
+			/*Vector3 eulerAngles = player.transform.rotation.eulerAngles;
+			eulerAngles.y -= angleDifference * Mathf.Rad2Deg;
+			player.transform.rotation = Quaternion.Euler(eulerAngles);*/
+
+			// Cancel momentum
+			player.velocity = Vector3.zero;
 		}
+		else if (wasGrippingGround)
+		{
+			// Assume skateboard movement
+			if (player.hasSkateboard)
+			{
+				// Get the average motion vector of the hand
+				Vector3 averageMotion = new Vector3(0.0f, 0.0f, 0.0f);
+				float timeSpan = 0.1f;
+				int numSamples = 0;
+
+				for (int i = 0; i < pastPositions.Length; i++)
+				{
+					if (Time.time - pastPositions[i].time <= timeSpan)
+					{
+						averageMotion += (pastPositions[i].position - pastPositions[(i - 1 + pastPositions.Length) % pastPositions.Length].position);
+						numSamples++;
+					}
+				}
+
+				// Add it to the player's velocity
+				averageMotion.y = 0.0f; // you raise me up...
+				player.velocity -= averageMotion / timeSpan;
+
+				Debug.Log("numsamples: " + numSamples + "motion: " + averageMotion);
+			}
+		}
+
+		wasGrippingGround = isGrippingGround;
 	}
 
 	void OnTriggerStay(Collider other)
