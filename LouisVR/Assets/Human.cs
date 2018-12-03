@@ -112,13 +112,22 @@ public class Human : MonoBehaviour {
         {
             transform.position += runDirection * (Time.deltaTime * runSpeed);
             //GetComponent<Rigidbody>().velocity = runDirection * runSpeed;
-            transform.LookAt(transform.position + runDirection);
+
+            // Change direction
+            if (!isZombie || true)
+            {
+                transform.LookAt(transform.position + runDirection);
+            }
+            else
+            {
+                transform.LookAt(transform.position + Vector3.down, runDirection);
+            }
         }
 	}
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Convert other zombies to zombies if we're a zombie
+        // Convert other humans to zombies if we're a zombie
         var human = collision.collider.gameObject.GetComponent<Human>();
         if (isZombie && human)
         {

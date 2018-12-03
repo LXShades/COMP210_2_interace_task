@@ -33,7 +33,8 @@ public class VRHand : MonoBehaviour
 	}
 
 	private PastPosition[] pastPositions = new PastPosition[100];
-	int currentPastPosition = 0;
+    private PastPosition[] pastHeadPositions = new PastPosition[100];
+    int currentPastPosition = 0;
 
 	// Use this for initialization
 	void Start()
@@ -66,7 +67,6 @@ public class VRHand : MonoBehaviour
             // Grab the ground
             if (Time.time - lastCollidedGroundTime <= 0.1)
             {
-                Debug.Log("Grabbed");
                 isGrippingGround = true;
             }
 
@@ -80,7 +80,6 @@ public class VRHand : MonoBehaviour
         }
         else if (isGripUp)
         {
-            Debug.Log("NoGrab");
             isGrippingGround = false;
 
             // Let go of humans
@@ -95,45 +94,33 @@ public class VRHand : MonoBehaviour
         if (carryingHuman)
         {
             carryingHuman.transform.localPosition = carryingHumanPosition;
+        }
 
-            // Convert them to zombies if close enough to mouth
-            if (Vector3.Distance(carryingHuman.transform.position, Camera.main.transform.position) <= 2.0f)
-            {
-                carryingHuman.isZombie = true;
-            }
+        // Update past positions
+        // Update position history
+        pastPositions[currentPastPosition].position = transform.position;
+        pastPositions[currentPastPosition].time = Time.time;
+        pastHeadPositions[currentPastPosition].position = player.transform.position;
+        pastHeadPositions[currentPastPosition].time = Time.time;
+        currentPastPosition++;
+
+        if (currentPastPosition >= pastPositions.Length)
+        {
+            currentPastPosition = 0;
         }
     }
 
 	private bool wasGrippingGround = false;
 	void UpdateDragMovement()
 	{
-		// Update position history
-		pastPositions[currentPastPosition].position = transform.position;
-		pastPositions[currentPastPosition].time = Time.time;
-		currentPastPosition++;
-
-		if (currentPastPosition >= pastPositions.Length)
-		{
-			currentPastPosition = 0;
-		}
-
 		if (isGrippingGround)
 		{
-			Vector3 movementVector = previousPosition - transform.position;
+            Vector3 movementVector = previousPosition - transform.position;
 
 			// Don't move vertically
 			movementVector.y = 0.0f;
-
-			// Pull the camera along
-			player.transform.position += movementVector;
-
-			// Turn the camera
-			float angleDifference = Mathf.Atan2(transform.position.y - head.transform.position.y, transform.position.x - head.transform.position.x);
-			angleDifference -= Mathf.Atan2(previousPosition.y - head.transform.position.y, previousPosition.x - head.transform.position.x);
-
-			/*Vector3 eulerAngles = player.transform.rotation.eulerAngles;
-			eulerAngles.y -= angleDifference * Mathf.Rad2Deg;
-			player.transform.rotation = Quaternion.Euler(eulerAngles);*/
+            
+            player.transform.position += movementVector;
 
 			// Cancel momentum
 			player.velocity = Vector3.zero;
@@ -145,27 +132,25 @@ public class VRHand : MonoBehaviour
 			{
 				// Get the average motion vector of the hand
 				Vector3 averageMotion = new Vector3(0.0f, 0.0f, 0.0f);
-				float timeSpan = 0.1f;
+				float timeSpan = 0.2f;
 				int numSamples = 0;
 
 				for (int i = 0; i < pastPositions.Length; i++)
 				{
-					if (Time.time - pastPositions[i].time <= timeSpan)
+					if (Time.time - pastHeadPositions[i].time <= timeSpan)
 					{
-						averageMotion += (pastPositions[i].position - pastPositions[(i - 1 + pastPositions.Length) % pastPositions.Length].position);
+						averageMotion += (pastHeadPositions[i].position - pastHeadPositions[(i - 1 + pastHeadPositions.Length) % pastHeadPositions.Length].position);
 						numSamples++;
 					}
 				}
 
 				// Add it to the player's velocity
 				averageMotion.y = 0.0f; // you raise me up...
-				player.velocity -= averageMotion / timeSpan;
-
-				Debug.Log("numsamples: " + numSamples + "motion: " + averageMotion);
+				player.velocity += averageMotion / timeSpan;
 			}
-		}
+        }
 
-		wasGrippingGround = isGrippingGround;
+        wasGrippingGround = isGrippingGround;
 	}
 
 	void OnTriggerStay(Collider other)

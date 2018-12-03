@@ -17,6 +17,17 @@ public class Hand : MonoBehaviour {
 	void Start () {
         camera = Camera.main;
         rigidbody = GetComponent<Rigidbody>();
+
+        // Turn off the cube if VR is enabled
+        if (UnityEngine.XR.XRSettings.enabled)
+        {
+            Transform cube = transform.Find("Cube");
+
+            if (cube)
+            {
+                cube.gameObject.SetActive(false);
+            }
+        }
 	}
 	
 	// Update is called once per frame
@@ -24,24 +35,26 @@ public class Hand : MonoBehaviour {
         // Update the previous position
         previousPosition = transform.position;
 
-        // Position the hand from camera
-        Ray cameraRay = camera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(cameraRay, out hit, defaultArmLength, ~(1<<LayerMask.NameToLayer("Hand"))))
+        if (!UnityEngine.XR.XRSettings.enabled)
         {
-            Debug.Log("Collided with " + hit.collider.gameObject);
-            transform.position = hit.point;
-        }
-        else
-        {
-            transform.position = cameraRay.origin + cameraRay.direction * defaultArmLength;
-        }
+            // Position the hand from camera
+            Ray cameraRay = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-        // Change the distance
-        defaultArmLength += Input.mouseScrollDelta.y;
+            if (Physics.Raycast(cameraRay, out hit, defaultArmLength, ~(1 << LayerMask.NameToLayer("Hand")), QueryTriggerInteraction.Ignore))
+            {
+                transform.position = hit.point;
+            }
+            else
+            {
+                transform.position = cameraRay.origin + cameraRay.direction * defaultArmLength;
+            }
 
-        // Drag
-        isGripping = Input.GetButton("Fire1");
+            // Change the distance
+            defaultArmLength += Input.mouseScrollDelta.y;
+
+            // Drag
+            isGripping = Input.GetButton("Fire1");
+        }
 	}
 }
