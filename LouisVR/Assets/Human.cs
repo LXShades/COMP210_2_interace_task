@@ -69,9 +69,9 @@ public class Human : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         // Run away from the player
-        float runSpeed = Mathf.Lerp(maxRunSpeed, minRunSpeed, Vector3.Distance(transform.position, player.head.position) / maxRange);
+        float runSpeed = Mathf.Lerp(maxRunSpeed, minRunSpeed, Mathf.Clamp01(Vector3.Distance(transform.position, player.head.position) / maxRange));
 
-        if (Mathf.Sign(transform.position.z - player.transform.position.z) != Mathf.Sign(runDirection.z))
+        if (Mathf.Sign(transform.position.z - player.head.position.z) != Mathf.Sign(runDirection.z))
         {
             runDirection.z = -runDirection.z;
         }
@@ -104,7 +104,9 @@ public class Human : MonoBehaviour {
         {
             // Chase the human at a reasonable speed
             runDirection = (chaseTarget.transform.position - transform.position).normalized;
-            //runSpeed = what could the speed be?
+
+            // Zombie humans move faster based on how much farther along the player is
+            runSpeed = Mathf.Lerp(minRunSpeed, maxRunSpeed, Mathf.Clamp01((player.head.position.z - transform.position.z + maxRange * 0.75f) / maxRange));
         }
 
         // Move by the velocity

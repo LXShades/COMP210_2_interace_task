@@ -14,6 +14,7 @@ public class VRHand : MonoBehaviour
 	private Player player;
 	private GameObject head;
 
+    private bool isGripDown = false, isGripUp = false;
 	private bool isGrippingGround = false;
 
 	private float lastCollidedGroundTime;
@@ -53,15 +54,17 @@ public class VRHand : MonoBehaviour
 		previousPosition = transform.position;
 
         // Update grip
-        bool isGripDown = Input.GetMouseButtonDown(0), isGripUp = Input.GetMouseButtonUp(0);
-
         if (UnityEngine.XR.XRSettings.enabled)
         {
             isGripDown = isGrabbing.GetStateDown(handType);
             isGripUp = isGrabbing.GetStateUp(handType);
         }
-
-        //isGripping = Input.GetButton("Fire1");
+        else
+        {
+            isGripDown = Input.GetMouseButtonDown(0);
+            isGripUp = Input.GetMouseButtonUp(0);
+        }
+        
         if (isGripDown)
         {
             // Grab the ground
@@ -117,13 +120,22 @@ public class VRHand : MonoBehaviour
 		{
             Vector3 movementVector = previousPosition - transform.position;
 
-			// Don't move vertically
-			movementVector.y = 0.0f;
-            
-            player.transform.position += movementVector;
+            // Don't move vertically
+            movementVector.y = 0.0f;
 
-			// Cancel momentum
-			player.velocity = Vector3.zero;
+            // Cancel momentum
+            player.velocity = Vector3.zero;
+
+            // Use rotation-distance movement or absolute movement
+            if (!player.canTurn)
+            {
+                player.transform.position += movementVector;
+            }
+            else
+            {
+                player.transform.position -= (transform.position - player.head.position).normalized * (Vector3.Distance(player.head.position, previousPosition) - Vector3.Distance(player.head.position, transform.position));
+                //player.transform.rotation *= Quaternion.FromToRotation(previousPosition - player.head.position, transform.position - player.head.position);
+            }
 		}
 		else if (wasGrippingGround)
 		{
@@ -169,21 +181,19 @@ public class VRHand : MonoBehaviour
         }
 
         // Check if we clicked the win box
-        if (other.gameObject.GetComponent<WinCube>())
+        if (other.gameObject.GetComponent<WinCube>() && isGripDown)
         {
-            bool isGripDown = Input.GetMouseButtonDown(0), isGripUp = Input.GetMouseButtonUp(0);
+            // Restart the game
+            GameMode.RestartGame();
+        }
 
-            if (UnityEngine.XR.XRSettings.enabled)
-            {
-                isGripDown = isGrabbing.GetStateDown(handType);
-                isGripUp = isGrabbing.GetStateUp(handType);
-            }
+        // Check if we picked up the skateboard
+        if (other.gameObject.CompareTag("Skateboard") && isGripDown)
+        {
+            // Give it to the player
+            player.hasSkateboard = true;
 
-            if (isGripDown)
-            {
-                // Restart the game
-                GameMode.RestartGame();
-            }
+            Destroy(other.gameObject);
         }
 	}
 }

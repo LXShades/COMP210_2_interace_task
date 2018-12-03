@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField] public GameObject winObjectType;
 
+    [SerializeField] public bool canTurn = false;
 	[SerializeField] public bool hasSkateboard = true;
 	[SerializeField] public float skateboardFriction = 1.0f;
 
