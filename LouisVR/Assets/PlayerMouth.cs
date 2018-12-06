@@ -21,7 +21,7 @@ public class PlayerMouth : MonoBehaviour {
         if (human)
         {
             // Are we holding it? (rough test)
-            if (human.transform.parent != null && human.transform.parent.GetComponent<Hand>())
+            if (human.transform.parent != null)
             {
                 // Tag, you're a zombie!
                 human.isZombie = true;
