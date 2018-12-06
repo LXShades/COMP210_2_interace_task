@@ -17,18 +17,26 @@ public class Player : MonoBehaviour {
 
 	public Transform head;
 
+    private Vector3 lastPosition;
+
     private GameObject winObject;
 
 	private Vector3 initialPosition;
 
-	// Use this for initialization
-	void Start () {
+    private Rigidbody rigidbody;
+
+    // Use this for initialization
+    void Start () {
 		head = transform.Find("[CameraRig]").Find("Camera");
 		initialPosition = transform.position;
-	}
+        rigidbody = GetComponent<Rigidbody>();
+    }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
+        lastPosition = transform.position;
+
         if (!UnityEngine.XR.XRSettings.enabled)
         {
             // Move with WASD
@@ -76,6 +84,26 @@ public class Player : MonoBehaviour {
         {
             winObject = Instantiate(winObjectType);
             winObject.transform.position = headPosition + head.forward * 1.0f;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (lastPosition != transform.position)
+        {
+            // Do retroactive collision detection
+            Vector3 nextPosition = transform.position;
+            RaycastHit hit;
+
+            transform.position = lastPosition;
+
+            if (rigidbody.SweepTest((transform.position - lastPosition).normalized, out hit, Vector3.Distance(lastPosition, transform.position))) {
+                //
+            }
+            else
+            {
+                transform.position = lastPosition;
+            }
         }
     }
 }
