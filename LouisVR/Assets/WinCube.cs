@@ -18,6 +18,6 @@ public class WinCube : MonoBehaviour {
             transform.forward = player.head.position - transform.position;
         }
 
-        transform.position = new Vector3(transform.position.x, 2.0f + Mathf.Sin(Time.time), transform.position.z);
+        transform.position = new Vector3(transform.position.x, player.transform.position.y + 0.25f + Mathf.Sin(Time.time * 2.0f) * 0.25f, transform.position.z);
 	}
 }

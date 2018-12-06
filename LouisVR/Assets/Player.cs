@@ -71,11 +71,11 @@ public class Player : MonoBehaviour {
 			velocity = Vector3.zero;
 		}
 
-        // If we won, show the win cube
+        // If we won, spawn the win cube in front of the player
         if (GameMode.numHumans == 0 && !winObject)
         {
             winObject = Instantiate(winObjectType);
-            winObject.transform.position = headPosition + head.forward * 3.0f;
+            winObject.transform.position = headPosition + head.forward * 1.0f;
         }
     }
 }
