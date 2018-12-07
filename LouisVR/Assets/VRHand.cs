@@ -133,8 +133,12 @@ public class VRHand : MonoBehaviour
             }
             else
             {
-                player.SetPosition(player.transform.position - (transform.position - player.head.position).normalized * (Vector3.Distance(player.head.position, previousPosition) - Vector3.Distance(player.head.position, transform.position)));
-                //player.transform.rotation *= Quaternion.FromToRotation(previousPosition - player.head.position, transform.position - player.head.position);
+                Vector3 previousPositionMinusY = new Vector3(previousPosition.x, 0.0f, previousPosition.z);
+                Vector3 positionMinusY = new Vector3(transform.position.x, 0.0f, transform.position.z);
+                Vector3 headPositionMinusY = new Vector3(player.head.position.x, 0.0f, player.head.position.z);
+
+                player.SetPosition(player.transform.position + movementVector);
+                player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - headPositionMinusY, previousPositionMinusY - headPositionMinusY);
             }
 		}
 		else if (wasGrippingGround)
