@@ -11,6 +11,9 @@ public class VRHand : MonoBehaviour
 	[SteamVR_DefaultAction("GrabPinch", "default")]
 	public SteamVR_Action_Boolean isGrabbing;
 
+	[SteamVR_DefaultAction("Haptic", "default")]
+	public SteamVR_Action_Vibration vibration;
+
 	private Player player;
 	private GameObject head;
 
@@ -175,13 +178,25 @@ public class VRHand : MonoBehaviour
 
         // Check if we picked up a human
         if (human)
-        {
-            lastCollidedHuman = human;
+		{
+			// Feedback to the user
+			if (Time.time - lastCollidedHumanTime >= 0.05f)
+			{
+				vibration.Execute(0.0f, 0.08f, 80, 0.6f, handType);
+			}
+
+			lastCollidedHuman = human;
             lastCollidedHumanTime = Time.time;
         }
-        else
-        {
-            lastCollidedGroundTime = Time.time;
+        else if (!other.isTrigger) // don't collide with other triggers such as hands etc
+		{
+			// Feedback to the user
+			if (Time.time - lastCollidedGroundTime >= 0.05f)
+			{
+				vibration.Execute(0.0f, 0.08f, 80, 0.6f, handType);
+			}
+
+			lastCollidedGroundTime = Time.time;
         }
 
         // Check if we clicked the win box

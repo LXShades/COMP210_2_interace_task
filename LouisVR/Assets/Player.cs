@@ -99,6 +99,7 @@ public class Player : MonoBehaviour {
     {
         // Do collision detection
         RaycastHit hit;
+		int collisionLayers = ~(((1 << LayerMask.NameToLayer("Human")) | (1 << LayerMask.NameToLayer("Hand"))));
 
         if (rigidbody.SweepTest((position - transform.position).normalized, out hit, Vector3.Distance(transform.position, position)))
         {
