@@ -19,6 +19,7 @@ public class VRHand : MonoBehaviour
 
     private bool isGripDown = false, isGripUp = false;
 	private bool isGrippingGround = false;
+	private bool isGripHeld = false;
 
 	private float lastCollidedGroundTime;
 
@@ -27,6 +28,9 @@ public class VRHand : MonoBehaviour
 
     private Human carryingHuman;
     private Vector3 carryingHumanPosition;
+
+	private GameObject zombieHandModel;
+	private GameObject zombieHandModelClasped;
 
 	private Vector3 previousPosition;
 
@@ -43,8 +47,12 @@ public class VRHand : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
+		// Initialise components and children
 		player = GameObject.Find("Player").GetComponent<Player>();
 		head = GameObject.Find("[CameraRig]/Camera");
+		
+		zombieHandModel = transform.Find("ZombieHand").gameObject;
+		zombieHandModelClasped = transform.Find("ZombieHandClasped").gameObject;
 	}
 
 	// Update is called once per frame
@@ -52,6 +60,9 @@ public class VRHand : MonoBehaviour
 	{
 		// Update drag movement
 		UpdateDragMovement();
+
+		// Update hand clasp visuals
+		UpdateClaspVisuals();
 
 		// Update the previous position
 		previousPosition = transform.position;
@@ -61,11 +72,15 @@ public class VRHand : MonoBehaviour
         {
             isGripDown = isGrabbing.GetStateDown(handType);
             isGripUp = isGrabbing.GetStateUp(handType);
-        }
+
+			isGripHeld = (isGripDown || isGripHeld) && !isGripUp;
+		}
         else
         {
             isGripDown = Input.GetMouseButtonDown(0);
             isGripUp = Input.GetMouseButtonUp(0);
+
+			isGripHeld = (isGripDown || isGripHeld) && !isGripUp;
         }
         
         if (isGripDown)
@@ -141,7 +156,8 @@ public class VRHand : MonoBehaviour
                 Vector3 headPositionMinusY = new Vector3(player.head.position.x, 0.0f, player.head.position.z);
 				Vector3 headPosition = player.head.transform.position;
 				Vector3 headForwardMinusY = new Vector3(player.head.forward.x, 0.0f, player.head.forward.z);
-				Vector3 torsoPosition = headPositionMinusY - headForwardMinusY * 0.75f;
+				Vector3 torsoPosition = new Vector3(player.torsoPosition.x, 0.0f, player.torsoPosition.z);
+				Vector3 torsoForward = (headPositionMinusY - torsoPosition).normalized;
 
 				// Rotate
                 player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - torsoPosition, previousPositionMinusY - torsoPosition);
@@ -150,7 +166,7 @@ public class VRHand : MonoBehaviour
 				player.transform.position -= player.head.transform.position - headPosition;
 
 				// Move
-				player.SetPosition(player.transform.position - headForwardMinusY * Vector3.Dot(headForwardMinusY, positionMinusY - previousPositionMinusY));
+				player.SetPosition(player.transform.position - torsoForward * Vector3.Dot(torsoForward, positionMinusY - previousPositionMinusY));
 			}
 		}
 		else if (wasGrippingGround)
@@ -179,6 +195,15 @@ public class VRHand : MonoBehaviour
         }
 
         wasGrippingGround = isGrippingGround;
+	}
+
+	private void UpdateClaspVisuals()
+	{
+		if (zombieHandModel && zombieHandModelClasped)
+		{
+			zombieHandModel.SetActive(!isGripHeld);
+			zombieHandModelClasped.SetActive(isGripHeld);
+		}
 	}
 
 	void OnTriggerStay(Collider other)
