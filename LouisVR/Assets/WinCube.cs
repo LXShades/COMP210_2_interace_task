@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WinCube : MonoBehaviour {
+	float baseHeight = 0.0f;
 
 	// Use this for initialization
 	void Start () {
-		
 	}
 	
 	// Update is called once per frame
@@ -18,6 +18,11 @@ public class WinCube : MonoBehaviour {
             transform.forward = player.head.position - transform.position;
         }
 
-        transform.position = new Vector3(transform.position.x, player.transform.position.y + 0.25f + Mathf.Sin(Time.time * 2.0f) * 0.25f, transform.position.z);
+		if (baseHeight < player.head.position.y + 0.25f)
+		{
+			baseHeight = player.head.position.y + 0.25f;
+		}
+
+        transform.position = new Vector3(transform.position.x, baseHeight + 0.25f + Mathf.Sin(Time.time * 2.0f) * 0.25f, transform.position.z);
 	}
 }
