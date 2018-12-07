@@ -139,10 +139,19 @@ public class VRHand : MonoBehaviour
                 Vector3 previousPositionMinusY = new Vector3(previousPosition.x, 0.0f, previousPosition.z);
                 Vector3 positionMinusY = new Vector3(transform.position.x, 0.0f, transform.position.z);
                 Vector3 headPositionMinusY = new Vector3(player.head.position.x, 0.0f, player.head.position.z);
+				Vector3 headPosition = player.head.transform.position;
+				Vector3 headForwardMinusY = new Vector3(player.head.forward.x, 0.0f, player.head.forward.z);
+				Vector3 torsoPosition = headPositionMinusY - headForwardMinusY * 0.75f;
 
-                player.SetPosition(player.transform.position + movementVector);
-                player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - headPositionMinusY, previousPositionMinusY - headPositionMinusY);
-            }
+				// Rotate
+                player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - torsoPosition, previousPositionMinusY - torsoPosition);
+
+				// Rotate around the head rather than the centre
+				player.transform.position -= player.head.transform.position - headPosition;
+
+				// Move
+				player.SetPosition(player.transform.position - headForwardMinusY * Vector3.Dot(headForwardMinusY, positionMinusY - previousPositionMinusY));
+			}
 		}
 		else if (wasGrippingGround)
 		{
