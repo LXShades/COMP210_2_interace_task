@@ -17,8 +17,6 @@ public class Player : MonoBehaviour {
 
 	public Transform head;
 
-    private Vector3 lastPosition;
-
     private GameObject winObject;
 
 	private Vector3 initialPosition;
@@ -30,11 +28,20 @@ public class Player : MonoBehaviour {
 		head = transform.Find("[CameraRig]").Find("Camera");
 		initialPosition = transform.position;
         rigidbody = GetComponent<Rigidbody>();
+        lastPosition = transform.position;
     }
-	
-	// Update is called once per frame
+
+    // Update is called once per frame
+    Vector3 lastPosition = Vector3.zero;
+
 	void Update ()
     {
+        // stupid dumb lazy collision detection
+        Vector3 newPosition = transform.position;
+        transform.position = lastPosition;
+
+        SetPosition(newPosition);
+
         lastPosition = transform.position;
 
         if (!UnityEngine.XR.XRSettings.enabled)
@@ -87,23 +94,19 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private void LateUpdate()
+    // Sets the player position with collision detection
+    public void SetPosition(Vector3 position)
     {
-        if (lastPosition != transform.position)
+        // Do collision detection
+        RaycastHit hit;
+
+        if (rigidbody.SweepTest((position - transform.position).normalized, out hit, Vector3.Distance(transform.position, position)))
         {
-            // Do retroactive collision detection
-            Vector3 nextPosition = transform.position;
-            RaycastHit hit;
-
-            transform.position = lastPosition;
-
-            if (rigidbody.SweepTest((transform.position - lastPosition).normalized, out hit, Vector3.Distance(lastPosition, transform.position))) {
-                //
-            }
-            else
-            {
-                transform.position = lastPosition;
-            }
+            transform.position += (position - transform.position).normalized * (hit.distance * 0.95f);
+        }
+        else
+        {
+            transform.position = position;
         }
     }
 }

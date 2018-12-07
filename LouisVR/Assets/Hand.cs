@@ -11,12 +11,9 @@ public class Hand : MonoBehaviour {
 
     private Vector3 previousPosition;
 
-    private Rigidbody rigidbody;
-
 	// Use this for initialization
 	void Start () {
         camera = Camera.main;
-        rigidbody = GetComponent<Rigidbody>();
 
         // Turn off the cube if VR is enabled
         if (UnityEngine.XR.XRSettings.enabled)
@@ -41,7 +38,9 @@ public class Hand : MonoBehaviour {
             Ray cameraRay = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(cameraRay, out hit, defaultArmLength, ~(1 << LayerMask.NameToLayer("Hand")), QueryTriggerInteraction.Ignore))
+            cameraRay.origin = camera.transform.position;
+
+            if (Physics.Raycast(cameraRay, out hit, defaultArmLength, ~(1 << LayerMask.NameToLayer("Hand") | (1 << LayerMask.NameToLayer("Player"))), QueryTriggerInteraction.Ignore))
             {
                 transform.position = hit.point;
             }

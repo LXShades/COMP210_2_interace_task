@@ -13,7 +13,7 @@ public class GameStatText : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         transform.up = Vector3.up;
-        transform.forward = player.transform.position - transform.position;
+        transform.forward = -(player.transform.position - transform.position);
 
         GetComponent<TextMesh>().text = "Humans left: " + GameMode.numHumans;
 	}

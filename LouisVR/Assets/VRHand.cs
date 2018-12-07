@@ -72,10 +72,9 @@ public class VRHand : MonoBehaviour
             {
                 isGrippingGround = true;
             }
-
-            // Grab humans
-            if (Time.time - lastCollidedHumanTime <= 0.1f)
+            else if (Time.time - lastCollidedHumanTime <= 0.1f)
             {
+                // or grab a human
                 carryingHuman = lastCollidedHuman;
                 carryingHuman.transform.SetParent(transform, true);
                 carryingHumanPosition = carryingHuman.transform.localPosition;
@@ -83,6 +82,7 @@ public class VRHand : MonoBehaviour
         }
         else if (isGripUp)
         {
+            // Ungrab the ground
             isGrippingGround = false;
 
             // Let go of humans
@@ -129,11 +129,11 @@ public class VRHand : MonoBehaviour
             // Use rotation-distance movement or absolute movement
             if (!player.canTurn)
             {
-                player.transform.position += movementVector;
+                player.SetPosition(player.transform.position + movementVector);
             }
             else
             {
-                player.transform.position -= (transform.position - player.head.position).normalized * (Vector3.Distance(player.head.position, previousPosition) - Vector3.Distance(player.head.position, transform.position));
+                player.SetPosition(player.transform.position - (transform.position - player.head.position).normalized * (Vector3.Distance(player.head.position, previousPosition) - Vector3.Distance(player.head.position, transform.position)));
                 //player.transform.rotation *= Quaternion.FromToRotation(previousPosition - player.head.position, transform.position - player.head.position);
             }
 		}
