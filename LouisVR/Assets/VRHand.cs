@@ -11,6 +11,9 @@ public class VRHand : MonoBehaviour
 	[SteamVR_DefaultAction("GrabPinch", "default")]
 	public SteamVR_Action_Boolean isGrabbing;
 
+    [SteamVR_DefaultAction("Haptic", "default")]
+    public SteamVR_Action_Vibration vibration;
+
     public AudioClip[] slapSounds;
     public float slapSoundVolume = 1.0f;
 
@@ -20,6 +23,7 @@ public class VRHand : MonoBehaviour
 
     private bool isGripDown = false, isGripUp = false;
 	private bool isGrippingGround = false;
+	private bool isGripHeld = false;
 
 	private float lastCollidedGroundTime;
 
@@ -28,6 +32,9 @@ public class VRHand : MonoBehaviour
 
     private Human carryingHuman;
     private Vector3 carryingHumanPosition;
+
+	private GameObject zombieHandModel;
+	private GameObject zombieHandModelClasped;
 
 	private Vector3 previousPosition;
 
@@ -44,16 +51,21 @@ public class VRHand : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
+		// Initialise components and children
 		player = GameObject.Find("Player").GetComponent<Player>();
 		head = GameObject.Find("[CameraRig]/Camera");
         audio = GetComponent<AudioSource>();
-	}
+		zombieHandModel = transform.Find("ZombieHand").gameObject;
+		zombieHandModelClasped = transform.Find("ZombieHandClasped").gameObject;	}
 
 	// Update is called once per frame
 	void Update()
 	{
 		// Update drag movement
 		UpdateDragMovement();
+
+		// Update hand clasp visuals
+		UpdateClaspVisuals();
 
 		// Update the previous position
 		previousPosition = transform.position;
@@ -63,11 +75,15 @@ public class VRHand : MonoBehaviour
         {
             isGripDown = isGrabbing.GetStateDown(handType);
             isGripUp = isGrabbing.GetStateUp(handType);
-        }
+
+			isGripHeld = (isGripDown || isGripHeld) && !isGripUp;
+		}
         else
         {
             isGripDown = Input.GetMouseButtonDown(0);
             isGripUp = Input.GetMouseButtonUp(0);
+
+			isGripHeld = (isGripDown || isGripHeld) && !isGripUp;
         }
         
         if (isGripDown)
@@ -141,10 +157,20 @@ public class VRHand : MonoBehaviour
                 Vector3 previousPositionMinusY = new Vector3(previousPosition.x, 0.0f, previousPosition.z);
                 Vector3 positionMinusY = new Vector3(transform.position.x, 0.0f, transform.position.z);
                 Vector3 headPositionMinusY = new Vector3(player.head.position.x, 0.0f, player.head.position.z);
+				Vector3 headPosition = player.head.transform.position;
+				Vector3 headForwardMinusY = new Vector3(player.head.forward.x, 0.0f, player.head.forward.z);
+				Vector3 torsoPosition = new Vector3(player.torsoPosition.x, 0.0f, player.torsoPosition.z);
+				Vector3 torsoForward = (headPositionMinusY - torsoPosition).normalized;
 
-                player.SetPosition(player.transform.position + movementVector);
-                player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - headPositionMinusY, previousPositionMinusY - headPositionMinusY);
-            }
+				// Rotate
+                player.transform.rotation *= Quaternion.FromToRotation(positionMinusY - torsoPosition, previousPositionMinusY - torsoPosition);
+
+				// Rotate around the head rather than the centre
+				player.transform.position -= player.head.transform.position - headPosition;
+
+				// Move
+				player.SetPosition(player.transform.position - torsoForward * Vector3.Dot(torsoForward, positionMinusY - previousPositionMinusY));
+			}
 		}
 		else if (wasGrippingGround)
 		{
@@ -179,21 +205,51 @@ public class VRHand : MonoBehaviour
         audio.clip = slapSounds[Random.Range(0, slapSounds.Length)];
         audio.pitch = Random.Range(0.95f, 1.05f);
         audio.volume = slapSoundVolume;
+        audio.Play();
     }
 
-	void OnTriggerStay(Collider other)
+	private void UpdateClaspVisuals()
+	{
+		if (zombieHandModel && zombieHandModelClasped)
+		{
+			zombieHandModel.SetActive(!isGripHeld);
+			zombieHandModelClasped.SetActive(isGripHeld);
+		}
+	}	void OnTriggerStay(Collider other)
 	{
         var human = other.gameObject.GetComponent<Human>();
 
         // Check if we picked up a human
         if (human)
-        {
-            lastCollidedHuman = human;
+		{
+			// Feedback to the user
+			if (Time.time - lastCollidedHumanTime >= 0.05f)
+			{
+                if (UnityEngine.XR.XRSettings.enabled)
+                {
+
+                    vibration.Execute(0.0f, 0.08f, 80, 0.6f, handType);
+                }
+			}
+
+			lastCollidedHuman = human;
             lastCollidedHumanTime = Time.time;
         }
-        else
-        {
-            lastCollidedGroundTime = Time.time;
+        else if (!other.isTrigger) // don't collide with other triggers such as hands etc
+		{
+			// Feedback to the user
+			if (Time.time - lastCollidedGroundTime >= 0.05f)
+            {
+                if (UnityEngine.XR.XRSettings.enabled)
+                {
+                    vibration.Execute(0.0f, 0.08f, 80, 0.6f, handType);
+                }
+
+                // Play slap sound
+                PlaySlapSound();
+			}
+
+			lastCollidedGroundTime = Time.time;
         }
 
         // Check if we clicked the win box

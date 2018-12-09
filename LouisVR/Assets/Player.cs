@@ -13,6 +13,8 @@ public class Player : MonoBehaviour {
 	[SerializeField] public bool hasSkateboard = true;
 	[SerializeField] public float skateboardFriction = 1.0f;
 
+	public Vector3 torsoPosition;
+
 	public Vector3 velocity;
 
 	public Transform head;
@@ -29,6 +31,7 @@ public class Player : MonoBehaviour {
 		initialPosition = transform.position;
         rigidbody = GetComponent<Rigidbody>();
         lastPosition = transform.position;
+		torsoPosition = head.transform.position;
     }
 
     // Update is called once per frame
@@ -86,6 +89,13 @@ public class Player : MonoBehaviour {
 			velocity = Vector3.zero;
 		}
 
+		// Drag the torso behind the player
+		float torsoHeight = 0.75f;
+		if (Vector3.Distance(torsoPosition, head.transform.position) > torsoHeight)
+		{
+			torsoPosition += (head.transform.position - torsoPosition).normalized * (Vector3.Distance(torsoPosition, head.transform.position) - torsoHeight);
+		}
+
         // If we won, spawn the win cube in front of the player
         if (GameMode.numHumans == 0 && !winObject)
         {
@@ -99,6 +109,7 @@ public class Player : MonoBehaviour {
     {
         // Do collision detection
         RaycastHit hit;
+		int collisionLayers = ~(((1 << LayerMask.NameToLayer("Human")) | (1 << LayerMask.NameToLayer("Hand"))));
 
         if (rigidbody.SweepTest((position - transform.position).normalized, out hit, Vector3.Distance(transform.position, position)))
         {
