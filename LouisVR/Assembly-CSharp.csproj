@@ -64,8 +64,8 @@
     <Compile Include="Assets\DebugCamera.cs" />
     <Compile Include="Assets\GameMode.cs" />
     <Compile Include="Assets\GameStatText.cs" />
-    <Compile Include="Assets\Hand.cs" />
     <Compile Include="Assets\Human.cs" />
+    <Compile Include="Assets\MouseHand.cs" />
     <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\PlayerMouth.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />

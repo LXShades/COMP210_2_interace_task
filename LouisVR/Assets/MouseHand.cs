@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hand : MonoBehaviour {
+public class MouseHand : MonoBehaviour {
     private Camera camera;
 
     [SerializeField] public float defaultArmLength = 3.0f;

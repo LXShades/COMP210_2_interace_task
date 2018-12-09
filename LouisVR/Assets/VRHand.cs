@@ -11,8 +11,12 @@ public class VRHand : MonoBehaviour
 	[SteamVR_DefaultAction("GrabPinch", "default")]
 	public SteamVR_Action_Boolean isGrabbing;
 
+    public AudioClip[] slapSounds;
+    public float slapSoundVolume = 1.0f;
+
 	private Player player;
 	private GameObject head;
+    private AudioSource audio;
 
     private bool isGripDown = false, isGripUp = false;
 	private bool isGrippingGround = false;
@@ -42,6 +46,7 @@ public class VRHand : MonoBehaviour
 	{
 		player = GameObject.Find("Player").GetComponent<Player>();
 		head = GameObject.Find("[CameraRig]/Camera");
+        audio = GetComponent<AudioSource>();
 	}
 
 	// Update is called once per frame
@@ -168,6 +173,13 @@ public class VRHand : MonoBehaviour
 
         wasGrippingGround = isGrippingGround;
 	}
+
+    void PlaySlapSound()
+    {
+        audio.clip = slapSounds[Random.Range(0, slapSounds.Length)];
+        audio.pitch = Random.Range(0.95f, 1.05f);
+        audio.volume = slapSoundVolume;
+    }
 
 	void OnTriggerStay(Collider other)
 	{
