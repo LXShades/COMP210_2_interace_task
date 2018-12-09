@@ -17,6 +17,8 @@ public class VRHand : MonoBehaviour
     public AudioClip[] slapSounds;
     public float slapSoundVolume = 1.0f;
 
+    public PlayerSounds playerSounds;
+
 	private Player player;
 	private GameObject head;
     private AudioSource audio;
@@ -100,6 +102,9 @@ public class VRHand : MonoBehaviour
                 carryingHuman = lastCollidedHuman;
                 carryingHuman.transform.SetParent(transform, true);
                 carryingHumanPosition = carryingHuman.transform.localPosition;
+
+                // Mmm tasty
+                PlayGrabSound();
             }
         }
         else if (isGripUp)
@@ -207,6 +212,15 @@ public class VRHand : MonoBehaviour
         audio.pitch = Random.Range(0.95f, 1.05f);
         audio.volume = slapSoundVolume;
         audio.Play();
+    }
+
+    void PlayGrabSound()
+    {
+        // Find the player to say zombie stuff
+        if (playerSounds)
+        {
+            playerSounds.PlayHumanGrabSound();
+        }
     }
 
 	private void UpdateClaspVisuals()
