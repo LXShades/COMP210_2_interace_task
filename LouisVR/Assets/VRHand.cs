@@ -56,7 +56,8 @@ public class VRHand : MonoBehaviour
 		head = GameObject.Find("[CameraRig]/Camera");
         audio = GetComponent<AudioSource>();
 		zombieHandModel = transform.Find("ZombieHand").gameObject;
-		zombieHandModelClasped = transform.Find("ZombieHandClasped").gameObject;	}
+        zombieHandModelClasped = transform.Find("ZombieHandClasped").gameObject;
+    }
 
 	// Update is called once per frame
 	void Update()
@@ -212,10 +213,21 @@ public class VRHand : MonoBehaviour
 	{
 		if (zombieHandModel && zombieHandModelClasped)
 		{
-			zombieHandModel.SetActive(!isGripHeld);
-			zombieHandModelClasped.SetActive(isGripHeld);
-		}
-	}	void OnTriggerStay(Collider other)
+            if (UnityEngine.XR.XRSettings.enabled || GetComponent<MouseHand>())
+            {
+                zombieHandModel.SetActive(!isGripHeld);
+                zombieHandModelClasped.SetActive(isGripHeld);
+            }
+            else
+            {
+                // Disable the hand if VR isn't working and this isn't a mouse-controlled hand
+                transform.Find("ZombieHand").gameObject.SetActive(false);
+                transform.Find("ZombieHandClasped").gameObject.SetActive(false);
+            }
+        }
+	}
+
+    void OnTriggerStay(Collider other)
 	{
         var human = other.gameObject.GetComponent<Human>();
 
@@ -227,7 +239,6 @@ public class VRHand : MonoBehaviour
 			{
                 if (UnityEngine.XR.XRSettings.enabled)
                 {
-
                     vibration.Execute(0.0f, 0.08f, 80, 0.6f, handType);
                 }
 			}

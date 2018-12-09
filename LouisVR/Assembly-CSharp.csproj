@@ -68,6 +68,7 @@
     <Compile Include="Assets\MouseHand.cs" />
     <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\PlayerMouth.cs" />
+    <Compile Include="Assets\PlayerSounds.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_TestThrow.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_TestTrackedCamera.cs" />
