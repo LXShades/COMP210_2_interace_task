@@ -1,5 +1,6 @@
 # AR/VR Project (1707981)
-GitHub Repo: http://github.com/LXShades/comp220_2_interace_task  
+GitHub Repo: http://github.com/LXShades/comp210_2_interace_task  
+Note: The commits by 'Newtoto' were from me using the Amber computer, and mistakenly not logging into my own account in TortoiseGit. Sorry for my error!  
 
 ## Zombie Tag
 A game where you play as a crawling zombie on the ground, chasing down fleeing humans and tagging them so they become zombies too. The player moves by crawling, ideally reducing motion sickness by restricting camera movement to snappy pulls made by the user's arms.  
