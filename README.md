@@ -4,11 +4,13 @@ GitHub Repo: http://github.com/LXShades/comp220_2_interace_task
 ## Zombie Tag
 A game where you play as a crawling zombie on the ground, chasing down fleeing humans and tagging them so they become zombies too. The player moves by crawling, ideally reducing motion sickness by restricting camera movement to snappy pulls made by the user's arms.  
 
-The goal of the game is to convert the entire roster of fleeing humans into mindless zombies joining you in the takeover of humanity. 
+The goal of the game is to convert the entire roster of fleeing humans into mindless zombies joining you in the takeover of humanity.  
 
 ### Mechanics
 * Using your hands, pull yourself forwards along the ground by touching the ground and pulling the trigger  
 * Pull in humans with hands and eat them by pulling both hands together and moving towards your mouth  
+* Grab the skateboard to move faster  
+* **When using keyboard and mouse:** Use **left click** to grab the ground or humans, **scrollwheel** to change distance of your hand, and **right click** to turn the camera.  
 * Stretch: Weights to make the arms heavier and user slower and more zombie-like  
 * Stretch: Pick up rocks and knives, throw them towards humans  
 
